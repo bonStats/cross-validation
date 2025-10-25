@@ -1,0 +1,264 @@
+---
+title: "Cross-validation"
+subtitle: "for statistical model choice"
+author: "Dr Joshua Bon"
+format: 
+  revealjs:
+    logo: aulogo.png
+    theme: [default, styles.scss]
+bibliography: refs.bib
+editor: source
+---
+
+```{r setup}
+#| echo: false
+
+set.seed(20251027)
+
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(polynom)
+library(purrr)
+library(glue)
+
+```
+
+
+## Learning outcomes
+
+1. Describe cross-validation for statistical models
+2. Explain purpose of cross-validation 
+3. Evaluate suitability of different cross-validation types
+
+
+Prerequisites: Linear regression
+
+## How do you choose a good model?
+
+```{r}
+#| cache: true
+
+f <- function(x) x * (x-1) * (x-2)
+x <- (1:10)/5
+
+simdata <- tibble(x = x, y = f(x) + rnorm(10))
+
+lms <- map(1:6, \(order) lm(y ~ poly(x, degree = order, raw = TRUE), data = simdata))
+
+r2 <- map(lms, \(model) summary(model)$r.squared)
+
+polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
+  
+plots <- map2(polys, 1:length(lms), \(pl,nm) 
+  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
+      annotate("text", x = 0.5, y = -1.5, label = paste0("R^2 == ", round(r2[[nm]], 2)), parse = TRUE) +
+    geom_point(aes(x=x,y=y)) + 
+    geom_function(fun = pl) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
+
+```
+
+## How do you choose a good model?
+
+```{r}
+
+adj_r2 <- map(lms, \(model) summary(model)$adj.r.squared)
+
+polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
+  
+plots <- map2(polys, 1:length(lms), \(pl,nm) 
+  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
+      annotate("text", x = 0.5, y = -1.5, label = paste0("bar(R)^2 == ", round(adj_r2[[nm]], 2)), parse = TRUE) +
+    geom_point(aes(x=x,y=y)) + 
+    geom_function(fun = pl) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
+
+```
+
+## How do you choose a good model?
+
+```{r}
+
+aic <- map(lms, \(model) AIC(model))
+
+polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
+  
+plots <- map2(polys, 1:length(lms), \(pl,nm) 
+  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
+      annotate("text", x = 0.5, y = -1.5, label = paste0("AIC == ", round(aic[[nm]], 2)), parse = TRUE) +
+    geom_point(aes(x=x,y=y)) + 
+    geom_function(fun = pl) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
+
+```
+
+
+## Model validation
+
+Problem: Difficult to assess overfitting with _in-sample validation_ metrics
+
+
+_In-sample validation_: assess model fit with data used for estimation
+
+
+Key idea:
+
+_Out-of-sample validation_: assess model fit with data **not** used for estimation
+
+
+Imagine you have additional data from the same distribution, perfect to test your model on!!
+
+## Train-test data splits
+
+Split your data into a **training set** and **test set**.
+
+```{r}
+
+# generate new data to test fitted polynomials on
+
+holdout1 <- simdata |> mutate(test = ifelse(1:n() == 8, TRUE, FALSE))
+
+lms1 <- map(1:6, \(order) lm(y ~ poly(x, degree = order, raw = TRUE), data = filter(holdout1, !test)))
+
+polys1 <- map(lms1, \(model) coef(model) |> as.polynomial() |> as.function())
+  
+plots1 <- map2(polys1, 1:length(lms), \(pl,nm) 
+  {ggplot(holdout1) + ggtitle(glue("poly(degree = {nm})")) +
+    geom_point(aes(x=x,y=y, colour = test)) + 
+    geom_function(fun = pl) +
+    theme_bw()}
+               )
+
+wrap_plots(plots1, axes='collect')
+```
+
+
+## What is a good model fit?
+
+```{r}
+
+library(dplyr)
+
+data <- as_tibble(state.x77) |>
+  rename(`HS Graduation Rate` = `HS Grad`,
+         `Income Per Capita` = Income)
+
+base_plot <- ggplot(data, aes(x = `HS Graduation Rate`, y = `Income Per Capita`)) + 
+  geom_point() +
+  theme_bw(base_size = 14)
+
+base_plot
+
+```
+
+::: footer
+@USDeptCommerce1977
+:::
+
+
+## What is a good model fit?
+
+```{r}
+#| code-fold: true
+#| message: false
+
+rmse <- function(model) sqrt(mean(residuals(model)^2))
+
+lm_rmse <- lm(data$`Income Per Capita` ~ data$`HS Graduation Rate`) |> rmse()
+
+lm_plot <- base_plot + geom_smooth(method = "lm") + 
+  annotate("text", x = 42, y = 5800, label = glue("RMSE = {round(lm_rmse, 0)}"), parse = FALSE)
+
+lm_plot
+
+```
+
+::: footer
+@USDeptCommerce1977
+:::
+
+
+## What is a good model fit?
+
+```{r}
+#| code-fold: true
+#| message: false
+
+
+
+loess_rmse <- loess(data$`Income Per Capita` ~ data$`HS Graduation Rate`) |> rmse()
+
+loess_plot <- base_plot + geom_smooth(method = "loess") + 
+  ggtitle("Non-linear model") +
+  annotate("text", x = 42, y = 5800, label = glue("RMSE = {round(loess_rmse, 0)}"), parse = FALSE)
+
+(lm_plot + ggtitle("Linear model")) + loess_plot + plot_layout(axes = "collect")
+
+```
+
+```{r}
+#| echo: false
+#| eval: false
+
+# Linear model fit, how do you know it's good? (introduce dataset) e.g. use RSS 
+```
+
+
+## Problem: Overfitting
+
+Polynomials?
+
+## Problem: Model comparison 
+
+
+
+## Validation: Internal vs external
+
+What's the difference?
+
+In-sample vs out-of-sample
+
+## Test set training set paradigm
+
+## Cross-validation
+
+Problems: Small sample sizes
+
+## Types
+
+Folds, LOO
+
+# Types
+
+Q: time series
+
+## How does this work in practice?
+
+## Bonus: CV is great for models that aren't comparible with internal validation! agnostic
+
+## Extentions and further info
+
+groups
+
+bayes
+
+bootstrap
+
+## recipe for cross-validation
+
+## References
+
