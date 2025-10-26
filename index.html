@@ -276,22 +276,48 @@ Which model should I choose?
 <div class="columns">
 <div class="column" style="width:60%;">
 <p>What are the trade-offs?</p>
-<ul>
-<li>Low proportion of training data</li>
-<li>Low proportion of test data</li>
-</ul>
-<p>Considerations</p>
-<ul>
-<li>Small sample sizes</li>
-<li>Purpose of validation</li>
-<li>Test set selection</li>
-</ul>
+<div class="fragment fade-in-then-out">
+<p><span class="math inline">\(\uparrow\)</span> <strong>training</strong> set</p>
+</div>
+<div class="fragment fade-in">
+<p><span class="math inline">\(\uparrow\)</span> <span style="color:red;"><strong>test set</strong></span></p>
+</div>
 </div><div class="column" style="width:40%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
 <p><img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="train-test-data-splits-3" class="slide level2">
+<h2>Train-test data splits</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>Considerations</p>
+<ul>
+<li class="fragment">Limits from small sample sizes</li>
+<li class="fragment">Purpose of validation
+<ul>
+<li class="fragment">Prediction</li>
+<li class="fragment">Model assessment</li>
+</ul></li>
+<li class="fragment">Test set selection
+<ul>
+<li class="fragment">Random</li>
+<li class="fragment">Ordered data</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="384"></p>
 </figure>
 </div>
 </div>
@@ -307,11 +333,11 @@ Which model should I choose?
 <h2>k-fold cross-validation</h2>
 <p>Duplicate data into <span class="math inline">\(k\)</span> “folds”: <strong>training sets</strong> and <span style="color:red;"><strong>test sets</strong></span></p>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section id="leave-one-out-cross-validation-kn" class="slide level2">
 <h2>Leave-one-out cross-validation <span class="math inline">\(k=n\)</span></h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
 <section id="cross-validation-workflow" class="slide level2">
 <h2>Cross-validation workflow</h2>
 <div class="cell" data-reveal="true" data-layout-align="default">
@@ -354,16 +380,17 @@ Which model should I choose?
 </section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
+<p>CV <span class="math inline">\(\approx\)</span> out-of-sample validation using <strong>all</strong> the data</p>
 <ul>
-<li class="fragment"><p>CV <span class="math inline">\(\approx\)</span> out-of-sample validation using <strong>all</strong> the data</p></li>
-<li class="fragment"><p>CV is model agnostic</p></li>
-<li class="fragment"><p>CV used for model selection</p>
+<li class="fragment"><p>Model agnostic</p></li>
+<li class="fragment"><p>Used for model selection</p>
 <ul>
 <li class="fragment">hyper-parameter tuning for machine learning methods</li>
 </ul></li>
-<li class="fragment"><p>CV complements your data science toolbox</p>
+<li class="fragment"><p>Complements your data science toolbox</p>
 <ul>
 <li class="fragment">does not replace assumption checking</li>
+<li class="fragment">no longer true “external validation”</li>
 </ul></li>
 <li class="fragment"><p>Many extensions</p>
 <ul>

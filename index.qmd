@@ -257,19 +257,18 @@ plot_split3
 
 :::: {.columns}
 
-::: {.column width="60%"}
+::: {.column width="60%" .incremental}
 
 
 What are the trade-offs?
 
-- Low proportion of training data
-- Low proportion of test data
+::: {.fragment .fade-in-then-out}
+$\uparrow$ **training** set
+:::
 
-Considerations
-
-- Small sample sizes
-- Purpose of validation
-- Test set selection
+::: {.fragment .fade-in}
+$\uparrow$ [**test set**]{style="color:red;"}
+:::
 
 :::
 
@@ -284,6 +283,37 @@ plot_split3 + theme(axis.text.y = element_blank())
 
 :::
 
+::::
+
+
+## Train-test data splits
+
+:::: {.columns}
+
+::: {.column width="60%" .incremental}
+
+Considerations
+
+- Limits from small sample sizes
+- Purpose of validation
+    - Prediction
+    - Model assessment
+- Test set selection
+    - Random
+    - Ordered data
+
+:::
+
+::: {.column width="40%"}
+
+```{r}
+#| fig-width: 4
+#| fig-height: 6
+#| message: false
+plot_split3 + theme(axis.text.y = element_blank())
+```
+
+:::
 
 ::::
 
@@ -389,15 +419,16 @@ flowchart LR
 
 :::{.incremental}
 
-- CV $\approx$ out-of-sample validation using **all** the data
+CV $\approx$ out-of-sample validation using **all** the data
 
-- CV is model agnostic
+- Model agnostic
 
-- CV used for model selection
+- Used for model selection
     - hyper-parameter tuning for machine learning methods
 
-- CV complements your data science toolbox
+- Complements your data science toolbox
     - does not replace assumption checking
+    - no longer true "external validation"
 
 - Many extensions
     - CV for grouped data, time series data
