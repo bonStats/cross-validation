@@ -1,6 +1,6 @@
 ---
 title: "Cross-validation"
-subtitle: "for statistical model choice"
+subtitle: "for statistical modelling"
 author: "Dr Joshua Bon"
 format: 
   revealjs:
@@ -26,61 +26,50 @@ library(glue)
 ```
 
 
+## Cross-validation
+
+::: {.callout-tip}
 ## Learning outcomes
 
 1. Describe cross-validation for statistical models
 2. Explain purpose of cross-validation 
-3. Evaluate suitability of different cross-validation types
+3. Evaluate suitability of cross-validation types
 
+:::
 
-Prerequisites: Linear regression
+::: {.callout-note}
+## Prerequisites
+
+- Linear regression
+
+:::
 
 ## How do you choose a good model?
 
 ```{r}
-#| cache: true
 
-f <- function(x) x * (x-1) * (x-2)
+f <- function(x) 5*x * (x-1) * (x-2)
 x <- (1:10)/5
 
 simdata <- tibble(x = x, y = f(x) + rnorm(10))
 
 lms <- map(1:6, \(order) lm(y ~ poly(x, degree = order, raw = TRUE), data = simdata))
 
-r2 <- map(lms, \(model) summary(model)$r.squared)
+#r2 <- map(lms, \(model) summary(model)$r.squared)
+rmse <- map(lms, \(model) sqrt(mean(residuals(model)^2)))
 
-polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
+polys_r2 <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
   
-plots <- map2(polys, 1:length(lms), \(pl,nm) 
+plot_r2 <- map2(polys_r2, 1:length(lms), \(pl,nm) 
   {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
-      annotate("text", x = 0.5, y = -1.5, label = paste0("R^2 == ", round(r2[[nm]], 2)), parse = TRUE) +
+      annotate("text", x = 0.25, y = -2.5, label = paste0("RMSE == ", round(rmse[[nm]], 2)), parse = TRUE) +
     geom_point(aes(x=x,y=y)) + 
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
     geom_function(fun = pl) +
     theme_bw()}
                )
 
-wrap_plots(plots, axes='collect')
-
-
-```
-
-## How do you choose a good model?
-
-```{r}
-
-adj_r2 <- map(lms, \(model) summary(model)$adj.r.squared)
-
-polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
-  
-plots <- map2(polys, 1:length(lms), \(pl,nm) 
-  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
-      annotate("text", x = 0.5, y = -1.5, label = paste0("bar(R)^2 == ", round(adj_r2[[nm]], 2)), parse = TRUE) +
-    geom_point(aes(x=x,y=y)) + 
-    geom_function(fun = pl) +
-    theme_bw()}
-               )
-
-wrap_plots(plots, axes='collect')
+wrap_plots(plot_r2, axes='collect')
 
 
 ```
@@ -95,8 +84,9 @@ polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
   
 plots <- map2(polys, 1:length(lms), \(pl,nm) 
   {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
-      annotate("text", x = 0.5, y = -1.5, label = paste0("AIC == ", round(aic[[nm]], 2)), parse = TRUE) +
+      annotate("text", x = 0.25, y = -2.5, label = paste0("AIC == ", round(aic[[nm]], 2)), parse = TRUE) +
     geom_point(aes(x=x,y=y)) + 
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
     geom_function(fun = pl) +
     theme_bw()}
                )
@@ -109,43 +99,246 @@ wrap_plots(plots, axes='collect')
 
 ## Model validation
 
-Problem: Difficult to assess overfitting with _in-sample validation_ metrics
+::: {.callout-important}
+## Problem
+
+Difficult to assess overfitting with **in-sample validation** metrics
+
+- **In-sample validation**: Assess model with data used in estimation
+
+:::
 
 
-_In-sample validation_: assess model fit with data used for estimation
 
 
-Key idea:
+::: {.callout-tip}
+## Key idea
 
-_Out-of-sample validation_: assess model fit with data **not** used for estimation
+Hold-out data for validation
+
+- **Out-of-sample validation**: Assess model fit with unused data 
+
+:::
 
 
-Imagine you have additional data from the same distribution, perfect to test your model on!!
 
-## Train-test data splits
 
-Split your data into a **training set** and **test set**.
+## If we had more data...
 
 ```{r}
-
-# generate new data to test fitted polynomials on
-
-holdout1 <- simdata |> mutate(test = ifelse(1:n() == 8, TRUE, FALSE))
-
-lms1 <- map(1:6, \(order) lm(y ~ poly(x, degree = order, raw = TRUE), data = filter(holdout1, !test)))
-
-polys1 <- map(lms1, \(model) coef(model) |> as.polynomial() |> as.function())
-  
-plots1 <- map2(polys1, 1:length(lms), \(pl,nm) 
-  {ggplot(holdout1) + ggtitle(glue("poly(degree = {nm})")) +
-    geom_point(aes(x=x,y=y, colour = test)) + 
+plots <- map2(polys_r2, 1:length(lms), \(pl,nm) 
+  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) +
+   geom_point(aes(x=x,y=y), colour = "black") + 
     geom_function(fun = pl) +
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
     theme_bw()}
                )
 
-wrap_plots(plots1, axes='collect')
+wrap_plots(plots, axes='collect')
+
+```
+## If we had more data...
+
+```{r}
+plots <- map2(polys_r2, 1:length(lms), \(pl,nm) 
+  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) +
+    geom_function(fun = pl, xlim = range(x)) +
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
 ```
 
+## If we had more data...
+
+```{r}
+
+newdata <- tibble(x = x, y = f(x) + rnorm(10))
+
+rmse <- map(lms, \(model) sqrt(mean((predict(model, newdata = newdata) - newdata$y)^2)))
+
+plots <- map2(polys_r2, 1:length(lms), \(pl,nm) 
+  {ggplot(newdata) + ggtitle(glue("poly(degree = {nm})")) +
+   geom_point(aes(x=x,y=y), colour = "red") + 
+    geom_function(fun = pl) +
+       #annotate("text", x = 0.25, y = -2.5, label = paste0("RMSE == ", round(rmse[[nm]], 2)), parse = TRUE) +
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
+```
+
+## If we had more data...
+
+```{r}
+
+plots <- map2(polys_r2, 1:length(lms), \(pl,nm) 
+  {ggplot(newdata) + ggtitle(glue("poly(degree = {nm})")) +
+   geom_point(aes(x=x,y=y), colour = "red") + 
+    geom_function(fun = pl) +
+       annotate("text", x = 0.25, y = -2.5, label = paste0("RMSE == ", round(rmse[[nm]], 2)), parse = TRUE, colour = "red") +
+    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
+    theme_bw()}
+               )
+
+wrap_plots(plots, axes='collect')
+
+```
+
+## Training and test data
+
+In this example we
+
+1. Used **training data** to fit several statistical models
+
+2. Used [**test data**]{style="color:red;"} to validate those models
+
+Why?
+
+- Model performance: How well does the estimated model generalise to unseen data?
+
+- Model selection: Which model should I choose?
+
+
+## Train-test data splits
+
+Idea: Split your data into a **training set** and [**test set**]{style="color:red;"}.
+
+```{r}
+
+split <- tibble(row = 1:20, type = "Train-test 50/50", set = rep(c("1. Training set", "2. Test set"), times = c(10, 10)))
+
+ggplot(split) + 
+  geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 5) +
+  scale_y_reverse("", n.breaks=20) + 
+  scale_x_discrete("") +
+  scale_color_manual("", values = c("black","red")) +
+  theme_minimal() + 
+  theme(panel.grid.minor = element_blank()) +
+  guides(colour="none")
+
+
+```
+
+## Train-test data splits
+
+Idea: Split your data into a **training set** and [**test set**]{style="color:red;"}.
+
+```{r}
+
+split2 <- tibble(row = 1:20, type = "Train-test 80/20", set = rep(c("1. Training set", "2. Test set"), times = c(16, 4))) |> bind_rows(split)
+
+split3  <- tibble(row = 1:20, type = "Train-test 90/10", set = rep(c("1. Training set", "2. Test set"), times = c(18, 2))) |> bind_rows(split2)
+
+plot_split3 <- ggplot(split3) + 
+  geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 5) +
+  scale_y_reverse("", n.breaks=20) + 
+  scale_x_discrete("") +
+  scale_color_manual("", values = c("black","red")) +
+  theme_minimal() + 
+  theme(panel.grid.minor = element_blank()) +
+  guides(colour="none")
+
+plot_split3
+
+```
+
+## Train-test data splits
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+- Where do we split?
+- What are the tradeoffs?
+
+
+
+- What if we have small datasets?
+- How do we best utilise the data?
+
+:::
+
+::: {.column width="40%"}
+
+```{r}
+#| fig-width: 4
+#| fig-height: 6
+#| message: false
+plot_split3 + theme(axis.text.y = element_blank())
+```
+
+:::
+
+
+::::
+
+## K-fold cross-validation
+
+Duplicate data into $K$ "folds": **training sets** and [**test sets**]{style="color:red;"}
+
+```{r}
+
+build_folds <- function(n,k){
+  step_val <- n/k
+  c1 <- seq(from = 0, to = n-step_val, by = step_val)
+  c2 <- c(rep(step_val, times = k-1), 0)
+  c3 <- rev(c1)
+  c4 <- c(rep(0, times = k-1), step_val)
+  m <- matrix(c(c1,c2,c3,c4), ncol = 4)
+  
+  apply(m, MARGIN = 1, 
+        \(x) rep(c("1. Training set", "2. Test set", "1. Training set", "2. Test set"), times = x),
+        simplify = FALSE
+        )
+}
+
+kfold <- build_folds(20,5) |> 
+  map(\(x) tibble(row = 1:20, set = x, type = "Train-test 80/20")) |>
+  bind_rows(.id = "fold") |>
+  mutate(fold = paste("Fold", fold))
+
+
+ggplot(kfold) + 
+  geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 5) +
+  scale_y_reverse("", n.breaks=20) + 
+  scale_x_discrete("") +
+  scale_color_manual("", values = c("black","red")) +
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  guides(colour="none") + 
+  facet_grid(rows = ~fold)
+
+
+```
+
+## Leave-one-out cross-validation 
+
+```{r}
+
+kfold <- build_folds(20,20) |> 
+  map(\(x) tibble(row = 1:20, set = x, type = "LOOCV")) |>
+  bind_rows(.id = "id") |>
+  mutate(fold = paste("Fold", id)) |>
+  mutate(fold = ordered(fold, levels = unique(paste("Fold", id))))
+
+
+ggplot(kfold) + 
+  geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 3) +
+  scale_y_reverse("", n.breaks=20) + 
+  scale_x_discrete("") +
+  scale_color_manual("", values = c("black","red")) +
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  guides(colour="none") + 
+  facet_wrap(~fold, nrow=2)
+
+
+```
 
 ## What is a good model fit?
 
@@ -259,6 +452,14 @@ bayes
 bootstrap
 
 ## recipe for cross-validation
+
+## toolbox
+
+Cross-validation does not replace other model checks.
+
+It is particularly favoured in prediction tasks
+
+Hyper-parameter selection (model selection)
 
 ## References
 

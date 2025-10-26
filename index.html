@@ -148,7 +148,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Cross-validation</h1>
-  <p class="subtitle">for statistical model choice</p>
+  <p class="subtitle">for statistical modelling</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -159,14 +159,40 @@ Dr Joshua Bon
 </div>
 
 </section>
-<section id="learning-outcomes" class="slide level2">
-<h2>Learning outcomes</h2>
+<section id="cross-validation" class="slide level2">
+<h2>Cross-validation</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Learning outcomes</strong></p>
+</div>
+<div class="callout-content">
 <ol type="1">
 <li>Describe cross-validation for statistical models</li>
 <li>Explain purpose of cross-validation</li>
-<li>Evaluate suitability of different cross-validation types</li>
+<li>Evaluate suitability of cross-validation types</li>
 </ol>
-<p>Prerequisites: Linear regression</p>
+</div>
+</div>
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Prerequisites</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Linear regression</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 <section id="how-do-you-choose-a-good-model" class="slide level2">
 <h2>How do you choose a good model?</h2>
@@ -176,38 +202,129 @@ Dr Joshua Bon
 <h2>How do you choose a good model?</h2>
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
-<section id="how-do-you-choose-a-good-model-2" class="slide level2">
-<h2>How do you choose a good model?</h2>
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
 <section id="model-validation" class="slide level2">
 <h2>Model validation</h2>
-<p>Problem: Difficult to assess overfitting with <em>in-sample validation</em> metrics</p>
-<p><em>In-sample validation</em>: assess model fit with data used for estimation</p>
-<p>Key idea:</p>
-<p><em>Out-of-sample validation</em>: assess model fit with data <strong>not</strong> used for estimation</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Problem</strong></p>
+</div>
+<div class="callout-content">
+<p>Difficult to assess overfitting with <strong>in-sample validation</strong> metrics</p>
+<ul>
+<li><strong>In-sample validation</strong>: Assess model with data used in estimation</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Key idea</strong></p>
+</div>
+<div class="callout-content">
+<p>Hold-out data for validation</p>
+<ul>
+<li><strong>Out-of-sample validation</strong>: Assess model fit with unused data</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
-<section id="test-set-training-set-splits" class="slide level2">
-<h2>Test set / training set splits</h2>
+<section id="if-we-had-more-data" class="slide level2">
+<h2>If we had more data…</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<section id="if-we-had-more-data-1" class="slide level2">
+<h2>If we had more data…</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+<section id="if-we-had-more-data-2" class="slide level2">
+<h2>If we had more data…</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<section id="if-we-had-more-data-3" class="slide level2">
+<h2>If we had more data…</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="training-and-test-data" class="slide level2">
+<h2>Training and test data</h2>
+<p>In this example we</p>
+<ol type="1">
+<li><p>Used <strong>training data</strong> to fit several statistical models</p></li>
+<li><p>Used <span style="color:red;"><strong>test data</strong></span> to validate those models</p></li>
+</ol>
+<p>Why?</p>
+<ul>
+<li><p>Model performance: How well does the estimated model generalise to unseen data?</p></li>
+<li><p>Model selection: Which model should I choose?</p></li>
+</ul>
 </section>
+<section id="train-test-data-splits" class="slide level2">
+<h2>Train-test data splits</h2>
+<p>Idea: Split your data into a <strong>training set</strong> and <span style="color:red;"><strong>test set</strong></span>.</p>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<section id="train-test-data-splits-1" class="slide level2">
+<h2>Train-test data splits</h2>
+<p>Idea: Split your data into a <strong>training set</strong> and <span style="color:red;"><strong>test set</strong></span>.</p>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="train-test-data-splits-2" class="slide level2">
+<h2>Train-test data splits</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><p>Where do we split?</p></li>
+<li><p>What are the tradeoffs?</p></li>
+<li><p>What if we have small datasets?</p></li>
+<li><p>How do we best utilise the data?</p></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="k-fold-cross-validation" class="slide level2">
+<h2>K-fold cross-validation</h2>
+<p>Duplicate data into <span class="math inline">\(K\)</span> “folds”: <strong>training sets</strong> and <span style="color:red;"><strong>test sets</strong></span></p>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<section id="leave-one-out-cross-validation" class="slide level2">
+<h2>Leave-one-out cross-validation</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section id="what-is-a-good-model-fit" class="slide level2">
 <h2>What is a good model fit?</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><div class="footer">
+<img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"><div class="footer">
 <p><span class="citation" data-cites="USDeptCommerce1977">U.S.&nbsp;Department of Commerce, Bureau of the Census (<a href="#/references" role="doc-biblioref" onclick="">1977</a>)</span></p>
 </div>
 </section>
 <section id="what-is-a-good-model-fit-1" class="slide level2">
 <h2>What is a good model fit?</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"><div class="footer">
+<img data-src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"><div class="footer">
 <p><span class="citation" data-cites="USDeptCommerce1977">U.S.&nbsp;Department of Commerce, Bureau of the Census (<a href="#/references" role="doc-biblioref" onclick="">1977</a>)</span></p>
 </div>
 </section>
 <section id="what-is-a-good-model-fit-2" class="slide level2">
 <h2>What is a good model fit?</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
 <section id="problem-overfitting" class="slide level2">
 <h2>Problem: Overfitting</h2>
 <p>Polynomials?</p>
@@ -223,7 +340,7 @@ Dr Joshua Bon
 <section id="test-set-training-set-paradigm" class="slide level2">
 <h2>Test set training set paradigm</h2>
 </section>
-<section id="cross-validation" class="slide level2">
+<section id="cross-validation-1" class="slide level2">
 <h2>Cross-validation</h2>
 <p>Problems: Small sample sizes</p>
 </section>
@@ -247,6 +364,15 @@ Dr Joshua Bon
 <p>groups</p>
 <p>bayes</p>
 <p>bootstrap</p>
+</section>
+<section id="recipe-for-cross-validation" class="slide level2">
+<h2>recipe for cross-validation</h2>
+</section>
+<section id="toolbox" class="slide level2">
+<h2>toolbox</h2>
+<p>Cross-validation does not replace other model checks.</p>
+<p>It is particularly favoured in prediction tasks</p>
+<p>Hyper-parameter selection (model selection)</p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
