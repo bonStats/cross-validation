@@ -314,23 +314,6 @@ Which model should I choose?
 <img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section id="cross-validation-workflow" class="slide level2">
 <h2>Cross-validation workflow</h2>
-<ol start="0" type="1">
-<li class="fragment">Settings: number of folds <span class="math inline">\(k\)</span>, train-test split proportion</li>
-<li class="fragment">Create <span class="math inline">\(k\)</span> folds, each with unique test set</li>
-<li class="fragment">Estimate model(s) with <strong>training set</strong> for each fold</li>
-<li class="fragment">Evaluate model(s) with <span style="color:red;"><strong>test set</strong></span> for each fold with metric(s)
-<ul>
-<li class="fragment">e.g.&nbsp;out-of-sample RMSE</li>
-</ul></li>
-<li class="fragment">Summarise the metric(s) from each fold
-<ul>
-<li class="fragment">e.g.&nbsp;mean out-of-sample RMSE</li>
-</ul></li>
-<li class="fragment">Evaluate and/or select model(s)</li>
-</ol>
-</section>
-<section id="cross-validation-workflow-1" class="slide level2">
-<h2>Cross-validation workflow</h2>
 <div class="cell" data-reveal="true" data-layout-align="default">
 <div class="cell-output-display">
 <div>

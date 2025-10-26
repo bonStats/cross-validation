@@ -352,20 +352,6 @@ ggplot(kfold) +
 
 ```
 
-## Cross-validation workflow
-
-:::{.incremental}
-
-0. Settings: number of folds $k$, train-test split proportion
-1. Create $k$ folds, each with unique test set
-2. Estimate model(s) with **training set** for each fold
-3. Evaluate model(s) with [**test set**]{style="color:red;"} for each fold with metric(s)
-    - e.g. out-of-sample RMSE
-4. Summarise the metric(s) from each fold
-    - e.g. mean out-of-sample RMSE
-5. Evaluate and/or select model(s)
-:::
-
 
 ## Cross-validation workflow
 
