@@ -79,6 +79,10 @@ wrap_plots(plot_r2, axes='collect')
 
 ```
 
+::: footer
+Mentimeter poll: [https://www.menti.com/alnftv332qkc](https://www.menti.com/alnftv332qkc)
+:::
+
 
 ## 
 
