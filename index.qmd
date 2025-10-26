@@ -59,6 +59,7 @@ simdata <- tibble(x = x, y = f(x) + rnorm(10))
 lms <- map(1:6, \(order) lm(y ~ poly(x, degree = order, raw = TRUE), data = simdata))
 
 #r2 <- map(lms, \(model) summary(model)$r.squared)
+aic <- map(lms, \(model) AIC(model))
 rmse <- map(lms, \(model) sqrt(mean(residuals(model)^2)))
 
 polys_r2 <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
@@ -66,6 +67,7 @@ polys_r2 <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
 plot_r2 <- map2(polys_r2, 1:length(lms), \(pl,nm) 
   {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
       annotate("text", x = 0.25, y = -2.5, label = paste0("RMSE == ", round(rmse[[nm]], 2)), parse = TRUE) +
+      annotate("text", x = 0.25, y = -1.5, label = paste0("AIC == ", round(aic[[nm]], 2)), parse = TRUE) +
     geom_point(aes(x=x,y=y)) + 
     coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
     geom_function(fun = pl) +
@@ -77,27 +79,6 @@ wrap_plots(plot_r2, axes='collect')
 
 ```
 
-## How do you choose a good model?
-
-```{r}
-
-aic <- map(lms, \(model) AIC(model))
-
-polys <- map(lms, \(model) coef(model) |> as.polynomial() |> as.function())
-  
-plots <- map2(polys, 1:length(lms), \(pl,nm) 
-  {ggplot(simdata) + ggtitle(glue("poly(degree = {nm})")) + 
-      annotate("text", x = 0.25, y = -2.5, label = paste0("AIC == ", round(aic[[nm]], 2)), parse = TRUE) +
-    geom_point(aes(x=x,y=y)) + 
-    coord_cartesian(ylim = c(-3,3), xlim = c(0,2)) +
-    geom_function(fun = pl) +
-    theme_bw()}
-               )
-
-wrap_plots(plots, axes='collect')
-
-
-```
 
 ## 
 
