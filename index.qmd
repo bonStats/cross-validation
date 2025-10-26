@@ -6,6 +6,7 @@ format:
   revealjs:
     logo: aulogo.png
     theme: [default, styles.scss]
+    chalkboard: true
 bibliography: refs.bib
 editor: source
 ---
