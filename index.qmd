@@ -297,7 +297,6 @@ Considerations
 - Limits from small sample sizes
 - Purpose of validation
     - Prediction
-    - Model assessment
 - Test set selection
     - Random
     - Ordered data
