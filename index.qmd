@@ -414,7 +414,6 @@ CV $\approx$ out-of-sample validation using **all** the data
 
 - Complements your data science toolbox
     - does not replace assumption checking
-    - no longer true "external validation"
 
 - Many extensions
     - CV for grouped data, time series data
