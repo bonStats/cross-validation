@@ -28,27 +28,7 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-    /* CSS for citations */
-    div.csl-bib-body { }
-    div.csl-entry {
-      clear: both;
-      margin-bottom: 0em;
-    }
-    .hanging-indent div.csl-entry {
-      margin-left:2em;
-      text-indent:-2em;
-    }
-    div.csl-left-margin {
-      min-width:2em;
-      float:left;
-    }
-    div.csl-right-inline {
-      margin-left:2em;
-      padding-left:1em;
-    }
-    div.csl-indent {
-      margin-left: 2em;
-    }  </style>
+  </style>
   <link rel="stylesheet" href="index_files/libs/revealjs/dist/theme/quarto-7f26cfe82153b2667096889441e135c6.css">
   <link href="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="index_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -141,6 +121,9 @@
       margin-right: 0; 
     }
   </style>
+  <script src="index_files/libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="index_files/libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="index_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -178,6 +161,7 @@ Dr Joshua Bon
 </div>
 </div>
 </div>
+<div class="fragment">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -190,6 +174,7 @@ Dr Joshua Bon
 <ul>
 <li>Linear regression</li>
 </ul>
+</div>
 </div>
 </div>
 </div>
@@ -220,6 +205,7 @@ Dr Joshua Bon
 </div>
 </div>
 </div>
+<div class="fragment">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -229,10 +215,11 @@ Dr Joshua Bon
 <p><strong>Key idea</strong></p>
 </div>
 <div class="callout-content">
-<p>Hold-out data for validation</p>
+<p>“Hold-out” some data for validation</p>
 <ul>
 <li><strong>Out-of-sample validation</strong>: Assess model fit with unused data</li>
 </ul>
+</div>
 </div>
 </div>
 </div>
@@ -260,11 +247,19 @@ Dr Joshua Bon
 <li><p>Used <strong>training data</strong> to fit several statistical models</p></li>
 <li><p>Used <span style="color:red;"><strong>test data</strong></span> to validate those models</p></li>
 </ol>
-<p>Why?</p>
-<ul>
-<li><p>Model performance: How well does the estimated model generalise to unseen data?</p></li>
-<li><p>Model selection: Which model should I choose?</p></li>
-</ul>
+<p><em>Why?</em></p>
+<div class="fragment">
+<dl>
+<dt>Model performance</dt>
+<dd>
+How well does our model generalise to unseen data?
+</dd>
+<dt>Model selection</dt>
+<dd>
+Which model should I choose?
+</dd>
+</dl>
+</div>
 </section>
 <section id="train-test-data-splits" class="slide level2">
 <h2>Train-test data splits</h2>
@@ -280,11 +275,16 @@ Dr Joshua Bon
 <h2>Train-test data splits</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
+<p>What are the trade-offs?</p>
 <ul>
-<li><p>Where do we split?</p></li>
-<li><p>What are the tradeoffs?</p></li>
-<li><p>What if we have small datasets?</p></li>
-<li><p>How do we best utilise the data?</p></li>
+<li>Low proportion of training data</li>
+<li>Low proportion of test data</li>
+</ul>
+<p>Considerations</p>
+<ul>
+<li>Small sample sizes</li>
+<li>Purpose of validation</li>
+<li>Test set selection</li>
 </ul>
 </div><div class="column" style="width:40%;">
 <div class="cell">
@@ -298,90 +298,96 @@ Dr Joshua Bon
 </div>
 </div></div>
 </section>
+<section>
+<section id="how-do-we-best-utilise-all-the-data-for-model-validation" class="title-slide slide level1 center">
+<h1>How do we best utilise all the data for model validation?</h1>
+
+</section>
 <section id="k-fold-cross-validation" class="slide level2">
-<h2>K-fold cross-validation</h2>
-<p>Duplicate data into <span class="math inline">\(K\)</span> “folds”: <strong>training sets</strong> and <span style="color:red;"><strong>test sets</strong></span></p>
+<h2>k-fold cross-validation</h2>
+<p>Duplicate data into <span class="math inline">\(k\)</span> “folds”: <strong>training sets</strong> and <span style="color:red;"><strong>test sets</strong></span></p>
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
-<section id="leave-one-out-cross-validation" class="slide level2">
-<h2>Leave-one-out cross-validation</h2>
+<section id="leave-one-out-cross-validation-kn" class="slide level2">
+<h2>Leave-one-out cross-validation <span class="math inline">\(k=n\)</span></h2>
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
-<section id="what-is-a-good-model-fit" class="slide level2">
-<h2>What is a good model fit?</h2>
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"><div class="footer">
-<p><span class="citation" data-cites="USDeptCommerce1977">U.S.&nbsp;Department of Commerce, Bureau of the Census (<a href="#/references" role="doc-biblioref" onclick="">1977</a>)</span></p>
+<section id="cross-validation-workflow" class="slide level2">
+<h2>Cross-validation workflow</h2>
+<ol start="0" type="1">
+<li class="fragment">Settings: number of folds <span class="math inline">\(k\)</span>, train-test split proportion</li>
+<li class="fragment">Create <span class="math inline">\(k\)</span> folds, each with unique test set</li>
+<li class="fragment">Estimate model(s) with <strong>training set</strong> for each fold</li>
+<li class="fragment">Evaluate model(s) with <span style="color:red;"><strong>test set</strong></span> for each fold with metric(s)
+<ul>
+<li class="fragment">e.g.&nbsp;out-of-sample RMSE</li>
+</ul></li>
+<li class="fragment">Summarise the metric(s) from each fold
+<ul>
+<li class="fragment">e.g.&nbsp;mean out-of-sample RMSE</li>
+</ul></li>
+<li class="fragment">Evaluate and/or select model(s)</li>
+</ol>
+</section>
+<section id="cross-validation-workflow-1" class="slide level2">
+<h2>Cross-validation workflow</h2>
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+  Data[Dataset] --&gt; Fold1(Fold 1)
+  Data --&gt; Fold2(Fold 2)
+  Data --&gt; Fold3(Fold 3)
+  Data --&gt; Fold4(Fold 4)
+  Data --&gt; Fold5(Fold 5)
+  
+  Fold1 --&gt; Train1(Train models)
+  Fold2 --&gt; Train2(Train models)
+  Fold3 --&gt; Train3(Train models)
+  Fold4 --&gt; Train4(Train models)
+  Fold5 --&gt; Train5(Train models)
+  
+  Train1 --&gt; Test1(Test models)
+  Train2 --&gt; Test2(Test models)
+  Train3 --&gt; Test3(Test models)
+  Train4 --&gt; Test4(Test models)
+  Train5 --&gt; Test5(Test models)
+  
+  Test1 --&gt; Sum(Summarise)
+  Test2 --&gt; Sum
+  Test3 --&gt; Sum
+  Test4 --&gt; Sum
+  Test5 --&gt; Sum
+  
+  Sum --&gt; Eval(Evaluate/select model)
+</pre>
 </div>
-</section>
-<section id="what-is-a-good-model-fit-1" class="slide level2">
-<h2>What is a good model fit?</h2>
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"><div class="footer">
-<p><span class="citation" data-cites="USDeptCommerce1977">U.S.&nbsp;Department of Commerce, Bureau of the Census (<a href="#/references" role="doc-biblioref" onclick="">1977</a>)</span></p>
-</div>
-</section>
-<section id="what-is-a-good-model-fit-2" class="slide level2">
-<h2>What is a good model fit?</h2>
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
-<section id="problem-overfitting" class="slide level2">
-<h2>Problem: Overfitting</h2>
-<p>Polynomials?</p>
-</section>
-<section id="problem-model-comparison" class="slide level2">
-<h2>Problem: Model comparison</h2>
-</section>
-<section id="validation-internal-vs-external" class="slide level2">
-<h2>Validation: Internal vs external</h2>
-<p>What’s the difference?</p>
-<p>In-sample vs out-of-sample</p>
-</section>
-<section id="test-set-training-set-paradigm" class="slide level2">
-<h2>Test set training set paradigm</h2>
-</section>
-<section id="cross-validation-1" class="slide level2">
-<h2>Cross-validation</h2>
-<p>Problems: Small sample sizes</p>
-</section>
-<section id="types" class="slide level2">
-<h2>Types</h2>
-<p>Folds, LOO</p>
-</section>
-<section>
-<section id="types-1" class="title-slide slide level1 center">
-<h1>Types</h1>
-<p>Q: time series</p>
-</section>
-<section id="how-does-this-work-in-practice" class="slide level2">
-<h2>How does this work in practice?</h2>
-</section>
-<section id="bonus-cv-is-great-for-models-that-arent-comparible-with-internal-validation-agnostic" class="slide level2">
-<h2>Bonus: CV is great for models that aren’t comparible with internal validation! agnostic</h2>
-</section>
-<section id="extentions-and-further-info" class="slide level2">
-<h2>Extentions and further info</h2>
-<p>groups</p>
-<p>bayes</p>
-<p>bootstrap</p>
-</section>
-<section id="recipe-for-cross-validation" class="slide level2">
-<h2>recipe for cross-validation</h2>
-</section>
-<section id="toolbox" class="slide level2">
-<h2>toolbox</h2>
-<p>Cross-validation does not replace other model checks.</p>
-<p>It is particularly favoured in prediction tasks</p>
-<p>Hyper-parameter selection (model selection)</p>
-</section>
-<section id="references" class="slide level2 smaller scrollable">
-<h2>References</h2>
-
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-USDeptCommerce1977" class="csl-entry" role="listitem">
-U.S.&nbsp;Department of Commerce, Bureau of the Census. 1977. <em>Statistical Abstract of the United States: 1977 (98th Edition)</em>. 98th ed. Washington, D.C.: U.S.&nbsp;Government Printing Office.
+<p></p></figure><p></p>
 </div>
 </div>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li class="fragment"><p>CV <span class="math inline">\(\approx\)</span> out-of-sample validation using <strong>all</strong> the data</p></li>
+<li class="fragment"><p>CV is model agnostic</p></li>
+<li class="fragment"><p>CV used for model selection</p>
+<ul>
+<li class="fragment">hyper-parameter tuning for machine learning methods</li>
+</ul></li>
+<li class="fragment"><p>CV complements your data science toolbox</p>
+<ul>
+<li class="fragment">does not replace assumption checking</li>
+</ul></li>
+<li class="fragment"><p>Many extensions</p>
+<ul>
+<li class="fragment">CV for grouped data, time series data</li>
+</ul></li>
+</ul>
+
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">

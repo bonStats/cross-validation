@@ -37,6 +37,8 @@ library(glue)
 
 :::
 
+. . .
+
 ::: {.callout-note}
 ## Prerequisites
 
@@ -108,13 +110,13 @@ Difficult to assess overfitting with **in-sample validation** metrics
 
 :::
 
-
+. . .
 
 
 ::: {.callout-tip}
 ## Key idea
 
-Hold-out data for validation
+"Hold-out" some data for validation
 
 - **Out-of-sample validation**: Assess model fit with unused data 
 
@@ -197,11 +199,15 @@ In this example we
 
 2. Used [**test data**]{style="color:red;"} to validate those models
 
-Why?
+_Why?_
 
-- Model performance: How well does the estimated model generalise to unseen data?
+. . .
 
-- Model selection: Which model should I choose?
+Model performance
+: How well does our model generalise to unseen data?
+
+Model selection
+: Which model should I choose?
 
 
 ## Train-test data splits
@@ -210,7 +216,7 @@ Idea: Split your data into a **training set** and [**test set**]{style="color:re
 
 ```{r}
 
-split <- tibble(row = 1:20, type = "Train-test 50/50", set = rep(c("1. Training set", "2. Test set"), times = c(10, 10)))
+split <- tibble(row = 1:20, type = "Train-test: 50/50", set = rep(c("1. Training set", "2. Test set"), times = c(10, 10)))
 
 ggplot(split) + 
   geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 5) +
@@ -230,9 +236,9 @@ Idea: Split your data into a **training set** and [**test set**]{style="color:re
 
 ```{r}
 
-split2 <- tibble(row = 1:20, type = "Train-test 80/20", set = rep(c("1. Training set", "2. Test set"), times = c(16, 4))) |> bind_rows(split)
+split2 <- tibble(row = 1:20, type = "Train-test: 80/20", set = rep(c("1. Training set", "2. Test set"), times = c(16, 4))) |> bind_rows(split)
 
-split3  <- tibble(row = 1:20, type = "Train-test 90/10", set = rep(c("1. Training set", "2. Test set"), times = c(18, 2))) |> bind_rows(split2)
+split3  <- tibble(row = 1:20, type = "Train-test: 90/10", set = rep(c("1. Training set", "2. Test set"), times = c(18, 2))) |> bind_rows(split2)
 
 plot_split3 <- ggplot(split3) + 
   geom_point(aes(y = row, x = type, colour = set), shape = 15, size = 5) +
@@ -253,13 +259,17 @@ plot_split3
 
 ::: {.column width="60%"}
 
-- Where do we split?
-- What are the tradeoffs?
 
+What are the trade-offs?
 
+- Low proportion of training data
+- Low proportion of test data
 
-- What if we have small datasets?
-- How do we best utilise the data?
+Considerations
+
+- Small sample sizes
+- Purpose of validation
+- Test set selection
 
 :::
 
@@ -277,9 +287,11 @@ plot_split3 + theme(axis.text.y = element_blank())
 
 ::::
 
-## K-fold cross-validation
+# How do we best utilise all the data for model validation?
 
-Duplicate data into $K$ "folds": **training sets** and [**test sets**]{style="color:red;"}
+## k-fold cross-validation
+
+Duplicate data into $k$ "folds": **training sets** and [**test sets**]{style="color:red;"}
 
 ```{r}
 
@@ -298,7 +310,7 @@ build_folds <- function(n,k){
 }
 
 kfold <- build_folds(20,5) |> 
-  map(\(x) tibble(row = 1:20, set = x, type = "Train-test 80/20")) |>
+  map(\(x) tibble(row = 1:20, set = x, type = "Train-test: 80/20")) |>
   bind_rows(.id = "fold") |>
   mutate(fold = paste("Fold", fold))
 
@@ -316,7 +328,7 @@ ggplot(kfold) +
 
 ```
 
-## Leave-one-out cross-validation 
+## Leave-one-out cross-validation $k=n$
 
 ```{r}
 
@@ -340,126 +352,70 @@ ggplot(kfold) +
 
 ```
 
-## What is a good model fit?
+## Cross-validation workflow
 
-```{r}
+:::{.incremental}
 
-library(dplyr)
-
-data <- as_tibble(state.x77) |>
-  rename(`HS Graduation Rate` = `HS Grad`,
-         `Income Per Capita` = Income)
-
-base_plot <- ggplot(data, aes(x = `HS Graduation Rate`, y = `Income Per Capita`)) + 
-  geom_point() +
-  theme_bw(base_size = 14)
-
-base_plot
-
-```
-
-::: footer
-@USDeptCommerce1977
+0. Settings: number of folds $k$, train-test split proportion
+1. Create $k$ folds, each with unique test set
+2. Estimate model(s) with **training set** for each fold
+3. Evaluate model(s) with [**test set**]{style="color:red;"} for each fold with metric(s)
+    - e.g. out-of-sample RMSE
+4. Summarise the metric(s) from each fold
+    - e.g. mean out-of-sample RMSE
+5. Evaluate and/or select model(s)
 :::
 
 
-## What is a good model fit?
+## Cross-validation workflow
 
-```{r}
-#| code-fold: true
-#| message: false
-
-rmse <- function(model) sqrt(mean(residuals(model)^2))
-
-lm_rmse <- lm(data$`Income Per Capita` ~ data$`HS Graduation Rate`) |> rmse()
-
-lm_plot <- base_plot + geom_smooth(method = "lm") + 
-  annotate("text", x = 42, y = 5800, label = glue("RMSE = {round(lm_rmse, 0)}"), parse = FALSE)
-
-lm_plot
-
+```{mermaid}
+flowchart LR
+  Data[Dataset] --> Fold1(Fold 1)
+  Data --> Fold2(Fold 2)
+  Data --> Fold3(Fold 3)
+  Data --> Fold4(Fold 4)
+  Data --> Fold5(Fold 5)
+  
+  Fold1 --> Train1(Train models)
+  Fold2 --> Train2(Train models)
+  Fold3 --> Train3(Train models)
+  Fold4 --> Train4(Train models)
+  Fold5 --> Train5(Train models)
+  
+  Train1 --> Test1(Test models)
+  Train2 --> Test2(Test models)
+  Train3 --> Test3(Test models)
+  Train4 --> Test4(Test models)
+  Train5 --> Test5(Test models)
+  
+  Test1 --> Sum(Summarise)
+  Test2 --> Sum
+  Test3 --> Sum
+  Test4 --> Sum
+  Test5 --> Sum
+  
+  Sum --> Eval(Evaluate/select model)
 ```
 
-::: footer
-@USDeptCommerce1977
+
+## Summary
+
+:::{.incremental}
+
+- CV $\approx$ out-of-sample validation using **all** the data
+
+- CV is model agnostic
+
+- CV used for model selection
+    - hyper-parameter tuning for machine learning methods
+
+- CV complements your data science toolbox
+    - does not replace assumption checking
+
+- Many extensions
+    - CV for grouped data, time series data
+
+
 :::
-
-
-## What is a good model fit?
-
-```{r}
-#| code-fold: true
-#| message: false
-
-
-
-loess_rmse <- loess(data$`Income Per Capita` ~ data$`HS Graduation Rate`) |> rmse()
-
-loess_plot <- base_plot + geom_smooth(method = "loess") + 
-  ggtitle("Non-linear model") +
-  annotate("text", x = 42, y = 5800, label = glue("RMSE = {round(loess_rmse, 0)}"), parse = FALSE)
-
-(lm_plot + ggtitle("Linear model")) + loess_plot + plot_layout(axes = "collect")
-
-```
-
-```{r}
-#| echo: false
-#| eval: false
-
-# Linear model fit, how do you know it's good? (introduce dataset) e.g. use RSS 
-```
-
-
-## Problem: Overfitting
-
-Polynomials?
-
-## Problem: Model comparison 
-
-
-
-## Validation: Internal vs external
-
-What's the difference?
-
-In-sample vs out-of-sample
-
-## Test set training set paradigm
-
-## Cross-validation
-
-Problems: Small sample sizes
-
-## Types
-
-Folds, LOO
-
-# Types
-
-Q: time series
-
-## How does this work in practice?
-
-## Bonus: CV is great for models that aren't comparible with internal validation! agnostic
-
-## Extentions and further info
-
-groups
-
-bayes
-
-bootstrap
-
-## recipe for cross-validation
-
-## toolbox
-
-Cross-validation does not replace other model checks.
-
-It is particularly favoured in prediction tasks
-
-Hyper-parameter selection (model selection)
-
-## References
 
