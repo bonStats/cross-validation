@@ -44,6 +44,7 @@ library(glue)
 ## Prerequisites
 
 - Linear regression
+- Akaike information criterion (AIC)
 
 :::
 
